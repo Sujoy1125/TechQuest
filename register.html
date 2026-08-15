@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TechQuest | Create Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
@@ -59,16 +62,18 @@
                 </div>
 
                 <div class="form-row">
-                  <label>Interests</label>
-                  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-                    <label><input type="checkbox" name="interests" value="frontend"> Frontend</label>
-                    <label><input type="checkbox" name="interests" value="backend"> Backend</label>
-                    <label><input type="checkbox" name="interests" value="ai"> AI & ML</label>
-                    <label><input type="checkbox" name="interests" value="cloud"> Cloud</label>
-                    <label><input type="checkbox" name="interests" value="cybersecurity"> Security</label>
-                    <label><input type="checkbox" name="interests" value="mobile"> Mobile</label>
-                  </div>
-                  <div id="error-interests" class="form-error"></div>
+                  <fieldset class="interest-fieldset" role="group" aria-label="Select your interests">
+                    <legend>Interests</legend>
+                    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                      <label><input type="checkbox" name="interests" value="frontend" aria-label="Frontend"> Frontend</label>
+                      <label><input type="checkbox" name="interests" value="backend" aria-label="Backend"> Backend</label>
+                      <label><input type="checkbox" name="interests" value="ai" aria-label="AI and ML"> AI & ML</label>
+                      <label><input type="checkbox" name="interests" value="cloud" aria-label="Cloud"> Cloud</label>
+                      <label><input type="checkbox" name="interests" value="cybersecurity" aria-label="Cybersecurity"> Security</label>
+                      <label><input type="checkbox" name="interests" value="mobile" aria-label="Mobile"> Mobile</label>
+                    </div>
+                  </fieldset>
+                  <div id="error-interests" class="form-error" aria-live="polite"></div>
                 </div>
 
                 <div class="form-row" style="display:flex; gap:12px; align-items:center; margin-top:0.5rem;">
@@ -79,7 +84,7 @@
                 <div id="error-general" class="form-error" style="margin-top:0.5rem;"></div>
               </form>
 
-              <p style="margin-top:1rem; color:var(--text-dim);">This is a demo-only account system — passwords are stored only in your browser for prototype purposes.</p>
+              <p style="margin-top:1rem; color:var(--text-dim);">This is a frontend-only prototype: credentials are hashed in-browser for demo testing only and are not production-safe.</p>
             </div>
 
             <div class="landing-hero-preview-card" style="padding:1rem;">
@@ -104,9 +109,34 @@
     import { registerUser } from './js/auth.js';
 
     const form = document.getElementById('register-form');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const errorEls = {
+      name: document.getElementById('error-name'),
+      email: document.getElementById('error-email'),
+      college: document.getElementById('error-college'),
+      password: document.getElementById('error-password'),
+      confirmPassword: document.getElementById('error-confirmPassword'),
+      interests: document.getElementById('error-interests'),
+      general: document.getElementById('error-general')
+    };
+
+    function clearErrors() {
+      Object.values(errorEls).forEach((el) => {
+        if (el) el.textContent = '';
+      });
+    }
+
+    function setErrors(errors = {}) {
+      clearErrors();
+      Object.entries(errors).forEach(([key, message]) => {
+        const el = errorEls[key] || errorEls.general;
+        if (el) el.textContent = message;
+      });
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      document.getElementById('error-general').textContent = '';
+      clearErrors();
 
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -115,19 +145,36 @@
       const confirmPassword = document.getElementById('confirmPassword').value;
       const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(i => i.value);
 
-      const result = await registerUser({ name, email, college, password, confirmPassword, interests });
-      if (!result.success) {
-        const errors = result.errors || {};
-        Object.keys(errors).forEach(key => {
-          const el = document.getElementById(`error-${key}`);
-          if (el) el.textContent = errors[key];
-        });
-        if (errors.general) document.getElementById('error-general').textContent = errors.general;
+      const validationErrors = {};
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!name || name.length < 2) validationErrors.name = 'Please enter your full name.';
+      if (!email || !emailRegex.test(email)) validationErrors.email = 'Please enter a valid email address.';
+      if (!college || college.length < 2) validationErrors.college = 'Please enter your college.';
+      if (!password || password.length < 6) validationErrors.password = 'Password must be at least 6 characters.';
+      if (password !== confirmPassword) validationErrors.confirmPassword = 'Passwords do not match.';
+      if (!interests.length) validationErrors.interests = 'Select at least one interest.';
+
+      if (Object.keys(validationErrors).length) {
+        setErrors(validationErrors);
         return;
       }
 
-      // Successful registration: redirect to home
-      window.location.href = 'index.html';
+      submitButton.disabled = true;
+      submitButton.textContent = 'Creating Account...';
+
+      try {
+        const result = await registerUser({ name, email, college, password, confirmPassword, interests });
+        if (!result.success) {
+          setErrors(result.errors || { general: 'Registration failed.' });
+          return;
+        }
+
+        window.location.href = 'index.html';
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Create Account';
+      }
     });
   </script>
 </body>

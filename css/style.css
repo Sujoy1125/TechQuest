@@ -135,8 +135,22 @@ body.modal-open {
   outline-offset: 2px;
 }
 
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+button:disabled,
+.btn:disabled,
+input:disabled,
+select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .app-root {

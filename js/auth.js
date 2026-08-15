@@ -29,6 +29,24 @@ function validateRegistrationInput({ name, email, college, password, confirmPass
   return { isValid: Object.keys(errors).length === 0, errors };
 }
 
+export function validateLoginInput({ email, password }) {
+  const errors = {};
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const normalized = (email || '').trim();
+
+  if (!normalized) {
+    errors.email = 'Email is required.';
+  } else if (!emailRegex.test(normalized)) {
+    errors.email = 'Please enter a valid email address.';
+  }
+
+  if (!password) {
+    errors.password = 'Password is required.';
+  }
+
+  return { isValid: Object.keys(errors).length === 0, errors };
+}
+
 async function hashPassword(password) {
   // Simple client-side SHA-256 hashing using Web Crypto
   try {
@@ -67,11 +85,23 @@ export async function registerUser({ name, email, college, password, confirmPass
 }
 
 export async function loginUser({ email, password }) {
+  const validation = validateLoginInput({ email, password });
+  if (!validation.isValid) {
+    return { success: false, errors: validation.errors };
+  }
+
   const normalized = (email || '').trim().toLowerCase();
-  if (!normalized || !password) return { success: false, error: 'Provide email and password.' };
   const hashed = await hashPassword(password);
   const user = authenticateUser(normalized, hashed);
-  if (!user) return { success: false, error: 'Invalid email or password.' };
+  if (!user) {
+    return {
+      success: false,
+      errors: {
+        general: 'Invalid email or password.'
+      }
+    };
+  }
+
   setCurrentUserSession(user.id);
   return { success: true, user };
 }
