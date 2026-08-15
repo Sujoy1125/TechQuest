@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Local / Temp files
+dist/
+build/
+.env
+.env.local
+.env.*.local
