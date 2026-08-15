@@ -18,8 +18,10 @@ import {
   saveTheme,
   resetAllData,
   isRegistered,
-  isEventCompleted
-} from './storage.js';
+  isEventCompleted,
+  isLoggedIn,
+  getCurrentUser
+} from './storage_v2.js';
 import { getAllEvents, getEventById, filterEvents, sortEvents } from './events.js';
 import { registerForEvent, getRegistrationByEventId } from './registration.js';
 import {
@@ -64,6 +66,9 @@ export function initApp() {
   // 1. Apply persisted theme
   initTheme();
 
+  // 1.5 Render auth controls in the navbar (Sign In / Profile / Logout)
+  try { renderAuthControls(); } catch (e) { /* non-fatal */ }
+
   // 2. Attach global delegated event listener to #app
   setupEventDelegation();
 
@@ -91,6 +96,62 @@ export function initApp() {
 function initTheme() {
   const currentTheme = getTheme();
   document.documentElement.setAttribute('data-theme', currentTheme);
+}
+
+/**
+ * Render authentication controls in the navbar depending on session state.
+ * Shows Sign In / Create Account when logged out, and Profile + Logout when logged in.
+ */
+function renderAuthControls() {
+  const hud = document.querySelector('.nav-gamification-hud');
+  if (!hud) return;
+
+  // Avoid duplicating controls
+  let authEl = document.querySelector('#nav-auth-controls');
+  if (!authEl) {
+    authEl = document.createElement('div');
+    authEl.id = 'nav-auth-controls';
+    authEl.style.display = 'flex';
+    authEl.style.alignItems = 'center';
+    authEl.style.gap = '0.5rem';
+    hud.appendChild(authEl);
+  }
+
+  // Determine logged in state
+  try {
+    const loggedIn = typeof isLoggedIn === 'function' ? isLoggedIn() : false;
+    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+
+    if (!loggedIn || !user) {
+      authEl.innerHTML = `
+        <a class="btn btn-ghost btn-sm" href="login.html">Sign In</a>
+        <a class="btn btn-primary btn-sm" href="register.html">Create Account</a>
+      `;
+    } else {
+      authEl.innerHTML = `
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <span style="font-size:0.95rem;">${user.avatar || '👤'} <strong style="margin-left:6px;">${user.name || user.email}</strong></span>
+          <button class="btn btn-ghost btn-sm" id="btn-logout">Logout</button>
+        </div>
+      `;
+
+      const btn = authEl.querySelector('#btn-logout');
+      if (btn) btn.addEventListener('click', () => {
+        // Lazy-load auth module for logout behavior
+        import('./auth.js').then(mod => {
+          mod.logoutUser();
+          // Re-render controls and refresh the app
+          renderAuthControls();
+          refreshAll();
+          // Redirect to home (cleanest UX)
+          window.location.href = 'index.html';
+        });
+      });
+    }
+  } catch (e) {
+    // Non-fatal - do not block app init
+    console.warn('[Auth] Failed to render auth controls', e);
+  }
 }
 
 /**

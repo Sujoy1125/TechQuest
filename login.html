@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechQuest | Sign In</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-root">
+    <header class="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-brand">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-name">TechQuest</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="section-landing-hero">
+        <div class="section-container" style="max-width:720px; margin:2.5rem auto;">
+          <div class="landing-hero-grid">
+            <div class="landing-hero-content">
+              <div class="landing-hero-tagline">Welcome back</div>
+              <h1 class="landing-hero-title">Sign in to your TechQuest account</h1>
+              <p class="landing-hero-description">Access your Tech Passport, saved quests, and personalized recommendations.</p>
+
+              <form id="login-form" class="card" style="padding:1.25rem; margin-top:1rem;">
+                <div class="form-row">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" autocomplete="email" required />
+                  <div id="error-email" class="form-error"></div>
+                </div>
+                <div class="form-row">
+                  <label for="password">Password</label>
+                  <input id="password" name="password" type="password" autocomplete="current-password" required />
+                  <div id="error-password" class="form-error"></div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:12px; align-items:center; margin-top:0.5rem;">
+                  <button type="submit" class="btn btn-primary">Sign In</button>
+                  <a href="register.html" class="btn btn-ghost">Create Account</a>
+                </div>
+                <div id="error-general" class="form-error" style="margin-top:0.5rem;"></div>
+              </form>
+
+              <p style="margin-top:1rem; color:var(--text-dim);">By signing in you agree this is a demo-only authentication stored locally in your browser.</p>
+            </div>
+
+            <div class="landing-hero-preview-card" style="padding:1rem;">
+              <h3>Why sign in?</h3>
+              <ul>
+                <li>Save and isolate your bookmarked quests</li>
+                <li>Track your registrations and tickets</li>
+                <li>Persist XP, skills and badges across sessions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="footer-container">© 2026 TechQuest</div>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { loginUser } from './js/auth.js';
+
+    const form = document.getElementById('login-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('error-general').textContent = '';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      const result = await loginUser({ email, password });
+      if (!result.success) {
+        document.getElementById('error-general').textContent = result.error || 'Invalid credentials.';
+        return;
+      }
+
+      // Redirect to home after successful login
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

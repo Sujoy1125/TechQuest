@@ -11,7 +11,7 @@
  */
 
 import { EVENTS_DATA, SKILL_DOMAINS } from './data.js';
-import { getProfile, getCompletedEvents } from './storage.js';
+import { getProfile, getCompletedEvents } from './storage_v2.js';
 import { calculateLevel } from './gamification.js';
 
 /**

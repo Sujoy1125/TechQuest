@@ -13,7 +13,7 @@ import {
   getCompletedEvents,
   addCompletedEvent,
   isEventCompleted
-} from './storage.js';
+} from './storage_v2.js';
 
 /**
  * Calculates user level from total accumulated XP.

@@ -12,7 +12,7 @@
  */
 
 import { EVENTS_DATA, BADGE_DEFINITIONS } from './js/data.js';
-import * as storage from './js/storage.js';
+import * as storage from './js/storage_v2.js';
 import * as gamification from './js/gamification.js';
 import * as recommendation from './js/recommendation.js';
 import * as eventsModule from './js/events.js';
