@@ -6,7 +6,7 @@
  * dynamic modal management, accessible notifications, and reactive gamification HUD updates.
  */
 
-import { isEventSaved, isRegistered, isEventCompleted, getRegistrations, getCompletedEvents } from './storage.js';
+import { isEventSaved, isRegistered, isEventCompleted, getRegistrations, getCompletedEvents } from './storage_v2.js';
 import { getLevelProgress } from './gamification.js';
 import { BADGE_DEFINITIONS } from './data.js';
 import { getAllEvents } from './events.js';

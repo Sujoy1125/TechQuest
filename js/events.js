@@ -7,7 +7,7 @@
  */
 
 import { EVENTS_DATA } from './data.js';
-import { isEventSaved, isRegistered, isEventCompleted } from './storage.js';
+import { isEventSaved, isRegistered, isEventCompleted } from './storage_v2.js';
 
 /**
  * Retrieve the full master catalog of tech events.

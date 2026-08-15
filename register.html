@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechQuest | Create Account</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-root">
+    <header class="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-brand">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-name">TechQuest</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="section-landing-hero">
+        <div class="section-container" style="max-width:720px; margin:2.5rem auto;">
+          <div class="landing-hero-grid">
+            <div class="landing-hero-content">
+              <div class="landing-hero-tagline">Join TechQuest</div>
+              <h1 class="landing-hero-title">Create your free account</h1>
+              <p class="landing-hero-description">Sign up to save quests, claim tickets, and build your Tech Passport.</p>
+
+              <form id="register-form" class="card" style="padding:1.25rem; margin-top:1rem;">
+                <div class="form-row">
+                  <label for="name">Full Name</label>
+                  <input id="name" name="name" type="text" autocomplete="name" required />
+                  <div id="error-name" class="form-error"></div>
+                </div>
+
+                <div class="form-row">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" autocomplete="email" required />
+                  <div id="error-email" class="form-error"></div>
+                </div>
+
+                <div class="form-row">
+                  <label for="college">College</label>
+                  <input id="college" name="college" type="text" required />
+                  <div id="error-college" class="form-error"></div>
+                </div>
+
+                <div class="form-row">
+                  <label for="password">Password</label>
+                  <input id="password" name="password" type="password" autocomplete="new-password" required />
+                  <div id="error-password" class="form-error"></div>
+                </div>
+
+                <div class="form-row">
+                  <label for="confirmPassword">Confirm Password</label>
+                  <input id="confirmPassword" name="confirmPassword" type="password" required />
+                  <div id="error-confirmPassword" class="form-error"></div>
+                </div>
+
+                <div class="form-row">
+                  <label>Interests</label>
+                  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                    <label><input type="checkbox" name="interests" value="frontend"> Frontend</label>
+                    <label><input type="checkbox" name="interests" value="backend"> Backend</label>
+                    <label><input type="checkbox" name="interests" value="ai"> AI & ML</label>
+                    <label><input type="checkbox" name="interests" value="cloud"> Cloud</label>
+                    <label><input type="checkbox" name="interests" value="cybersecurity"> Security</label>
+                    <label><input type="checkbox" name="interests" value="mobile"> Mobile</label>
+                  </div>
+                  <div id="error-interests" class="form-error"></div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:12px; align-items:center; margin-top:0.5rem;">
+                  <button type="submit" class="btn btn-primary">Create Account</button>
+                  <a href="login.html" class="btn btn-ghost">Sign In</a>
+                </div>
+
+                <div id="error-general" class="form-error" style="margin-top:0.5rem;"></div>
+              </form>
+
+              <p style="margin-top:1rem; color:var(--text-dim);">This is a demo-only account system — passwords are stored only in your browser for prototype purposes.</p>
+            </div>
+
+            <div class="landing-hero-preview-card" style="padding:1rem;">
+              <h3>Profile benefits</h3>
+              <ul>
+                <li>Personalized recommendations</li>
+                <li>Persistent XP and badges</li>
+                <li>Isolated saved events and registrations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="footer-container">© 2026 TechQuest</div>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { registerUser } from './js/auth.js';
+
+    const form = document.getElementById('register-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('error-general').textContent = '';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const college = document.getElementById('college').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(i => i.value);
+
+      const result = await registerUser({ name, email, college, password, confirmPassword, interests });
+      if (!result.success) {
+        const errors = result.errors || {};
+        Object.keys(errors).forEach(key => {
+          const el = document.getElementById(`error-${key}`);
+          if (el) el.textContent = errors[key];
+        });
+        if (errors.general) document.getElementById('error-general').textContent = errors.general;
+        return;
+      }
+
+      // Successful registration: redirect to home
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,10 +1,9 @@
-/**
- * TechQuest - Storage Management Layer
- * Module: js/storage.js
- * 
- * Single authoritative access point for window.localStorage.
- * Strictly adheres to safe JSON serialization, try/catch isolation, and predefined keys.
- */
+// Thin compatibility wrapper re-exporting the new multi-user storage implementation
+// Keeps the original module path js/storage.js working for external docs and agents.
+
+export * from './storage_v2.js';
+export { default } from './storage_v2.js';
+
 
 export const STORAGE_KEYS = Object.freeze({
   PROFILE: 'techquest_profile',

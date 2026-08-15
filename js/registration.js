@@ -12,7 +12,7 @@ import {
   saveRegistrations,
   addRegistration,
   isRegistered
-} from './storage.js';
+} from './storage_v2.js';
 
 /**
  * Generate a unique registration ticket ID formatted strictly as TQ-2026-XXXX.
