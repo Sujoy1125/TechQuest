@@ -31,52 +31,52 @@
               <p class="landing-hero-description">Sign up to save quests, claim tickets, and build your Tech Passport.</p>
 
               <form id="register-form" class="card" style="padding:1.25rem; margin-top:1rem;">
-                <div class="form-row">
-                  <label for="name">Full Name</label>
-                  <input id="name" name="name" type="text" autocomplete="name" required />
+                <div class="form-group">
+                  <label for="name" class="form-label">Full Name</label>
+                  <input id="name" class="form-input" name="name" type="text" autocomplete="name" required />
                   <div id="error-name" class="form-error"></div>
                 </div>
 
-                <div class="form-row">
-                  <label for="email">Email</label>
-                  <input id="email" name="email" type="email" autocomplete="email" required />
+                <div class="form-group">
+                  <label for="email" class="form-label">Email</label>
+                  <input id="email" class="form-input" name="email" type="email" autocomplete="email" required />
                   <div id="error-email" class="form-error"></div>
                 </div>
 
-                <div class="form-row">
-                  <label for="college">College</label>
-                  <input id="college" name="college" type="text" required />
+                <div class="form-group">
+                  <label for="college" class="form-label">College</label>
+                  <input id="college" class="form-input" name="college" type="text" required />
                   <div id="error-college" class="form-error"></div>
                 </div>
 
-                <div class="form-row">
-                  <label for="password">Password</label>
-                  <input id="password" name="password" type="password" autocomplete="new-password" required />
+                <div class="form-group">
+                  <label for="password" class="form-label">Password</label>
+                  <input id="password" class="form-input" name="password" type="password" autocomplete="new-password" required />
                   <div id="error-password" class="form-error"></div>
                 </div>
 
-                <div class="form-row">
-                  <label for="confirmPassword">Confirm Password</label>
-                  <input id="confirmPassword" name="confirmPassword" type="password" required />
+                <div class="form-group">
+                  <label for="confirmPassword" class="form-label">Confirm Password</label>
+                  <input id="confirmPassword" class="form-input" name="confirmPassword" type="password" required />
                   <div id="error-confirmPassword" class="form-error"></div>
                 </div>
 
-                <div class="form-row">
-                  <fieldset class="interest-fieldset" role="group" aria-label="Select your interests">
-                    <legend>Interests</legend>
-                    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-                      <label><input type="checkbox" name="interests" value="frontend" aria-label="Frontend"> Frontend</label>
-                      <label><input type="checkbox" name="interests" value="backend" aria-label="Backend"> Backend</label>
-                      <label><input type="checkbox" name="interests" value="ai" aria-label="AI and ML"> AI & ML</label>
-                      <label><input type="checkbox" name="interests" value="cloud" aria-label="Cloud"> Cloud</label>
-                      <label><input type="checkbox" name="interests" value="cybersecurity" aria-label="Cybersecurity"> Security</label>
-                      <label><input type="checkbox" name="interests" value="mobile" aria-label="Mobile"> Mobile</label>
+                <div class="form-group">
+                  <fieldset class="interest-fieldset" style="border: none; padding: 0; margin: 0;" role="group" aria-label="Select your interests">
+                    <legend class="form-label">Interests</legend>
+                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top: 0.25rem;">
+                      <label style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-size: 0.85rem;"><input type="checkbox" name="interests" value="frontend" aria-label="Frontend"> Frontend</label>
+                      <label style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-size: 0.85rem;"><input type="checkbox" name="interests" value="backend" aria-label="Backend"> Backend</label>
+                      <label style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-size: 0.85rem;"><input type="checkbox" name="interests" value="ai" aria-label="AI and ML"> AI & ML</label>
+                      <label style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-size: 0.85rem;"><input type="checkbox" name="interests" value="cloud" aria-label="Cloud"> Cloud</label>
+                      <label style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-size: 0.85rem;"><input type="checkbox" name="interests" value="cybersecurity" aria-label="Cybersecurity"> Security</label>
+                      <label style="display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-size: 0.85rem;"><input type="checkbox" name="interests" value="mobile" aria-label="Mobile"> Mobile</label>
                     </div>
                   </fieldset>
                   <div id="error-interests" class="form-error" aria-live="polite"></div>
                 </div>
 
-                <div class="form-row" style="display:flex; gap:12px; align-items:center; margin-top:0.5rem;">
+                <div style="display:flex; gap:12px; align-items:center; margin-top:0.5rem;">
                   <button type="submit" class="btn btn-primary">Create Account</button>
                   <a href="login.html" class="btn btn-ghost">Sign In</a>
                 </div>

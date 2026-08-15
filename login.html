@@ -31,18 +31,18 @@
               <p class="landing-hero-description">Access your Tech Passport, saved quests, and personalized recommendations.</p>
 
               <form id="login-form" class="card" style="padding:1.25rem; margin-top:1rem;">
-                <div class="form-row">
-                  <label for="email">Email</label>
-                  <input id="email" name="email" type="email" autocomplete="email" required />
+                <div class="form-group">
+                  <label for="email" class="form-label">Email</label>
+                  <input id="email" class="form-input" name="email" type="email" autocomplete="email" required />
                   <div id="error-email" class="form-error"></div>
                 </div>
-                <div class="form-row">
-                  <label for="password">Password</label>
-                  <input id="password" name="password" type="password" autocomplete="current-password" required />
+                <div class="form-group">
+                  <label for="password" class="form-label">Password</label>
+                  <input id="password" class="form-input" name="password" type="password" autocomplete="current-password" required />
                   <div id="error-password" class="form-error"></div>
                 </div>
 
-                <div class="form-row" style="display:flex; gap:12px; align-items:center; margin-top:0.5rem;">
+                <div style="display:flex; gap:12px; align-items:center; margin-top:0.5rem;">
                   <button type="submit" class="btn btn-primary">Sign In</button>
                   <a href="register.html" class="btn btn-ghost">Create Account</a>
                 </div>
