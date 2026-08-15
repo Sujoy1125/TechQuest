@@ -1,31 +1,287 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechQuest - Explore Events</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <link rel="stylesheet" href="css/animations.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechQuest - Gamified Tech Event Explorer, Search and Filter Catalog">
+  <title>TechQuest | Explore Events</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <span class="logo-tech">Tech</span><span class="logo-quest">Quest</span>
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="explore.html" class="active">Explore</a>
-                <a href="passport.html">Passport</a>
-                <a href="my-events.html">My Events</a>
-            </div>
+  <div id="app" class="app-root">
+    
+    <!-- Navigation Header -->
+    <header class="navbar" id="main-navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-brand">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-name">TechQuest</span>
+          <span class="brand-version">v2.0</span>
+        </a>
+
+        <!-- Central Navigation Links -->
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link-item">Home</a>
+          <a href="explore.html" class="nav-link-item active">Explore</a>
+          <a href="passport.html" class="nav-link-item">Passport</a>
+          <a href="my-events.html" class="nav-link-item">My Events</a>
         </nav>
+
+        <!-- Global Gamification HUD in Navbar -->
+        <div class="nav-gamification-hud" id="nav-hud">
+          <div class="hud-level-badge" id="user-level-pill" title="Your Developer Level">
+            Level 1
+          </div>
+        <!-- Numeric level (used by JS). Visually hidden but available to assistive tech and scripts -->
+        <span id="user-level-number" class="visually-hidden">1</span>
+
+        <div class="hud-xp-track" title="XP Progress towards next level">
+          <div class="hud-xp-info">
+            <span class="hud-xp-text" id="user-xp-total">0 XP</span>
+            <span class="hud-xp-sub" id="xp-progress-text">0 / 500 XP</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="xp-progress-bar-fill" style="width: 0%;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+          <!-- Tech Passport Trigger Button -->
+          <button class="btn btn-passport" id="btn-passport" data-action="open-passport" aria-label="Open Tech Passport and Profile">
+            <span class="passport-icon">🛡️</span>
+            <span class="passport-label">Tech Passport</span>
+            <span class="passport-badge-count" id="nav-badge-count">0</span>
+          </button>
+
+          <!-- Theme Toggle Button -->
+          <button class="btn-icon-only btn-theme-toggle" id="btn-theme-toggle" data-action="toggle-theme" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+            <span class="theme-icon-light">☀️</span>
+            <span class="theme-icon-dark">🌙</span>
+          </button>
+        </div>
+      </div>
     </header>
-    <main class="animate-fade-in">
-        <h1>Explore Tech Events</h1>
-        <p>Discover exciting tech events, hackathons, and workshops.</p>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+      
+      <!-- Top Recommendation Section: Next Best Quest -->
+      <section class="section-recommendation" id="recommendation-section" aria-label="Recommended Quest">
+        <div class="section-container">
+          <div id="hero-recommendation-container" class="hero-container">
+            <!-- Dynamic Next Best Quest Card Rendered via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Event Explorer & Catalog Section -->
+      <section class="section-explorer" id="catalog-section" aria-label="Quest Catalog">
+        <div class="section-container">
+          
+          <div class="explorer-header">
+            <div class="explorer-title-group">
+              <h1 class="section-title">Explore Tech Quests</h1>
+              <p class="section-subtitle">Discover hackathons, bootcamps, and masterclasses to level up your engineering skills.</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="search-input" class="search-input" placeholder="Search by quest, skill, topic, or location..." autocomplete="off">
+              <button class="search-clear-btn hidden" id="search-clear-btn" data-action="clear-search" title="Clear Search">✕</button>
+            </div>
+          </div>
+
+          <!-- Filter & Control Toolbar -->
+          <div class="explorer-toolbar">
+            
+            <!-- Quick View Filter Tabs -->
+            <div class="filter-tabs" role="tablist" id="filter-tabs">
+              <button class="tab-btn active" data-action="change-tab" data-tab="all" role="tab" aria-selected="true">
+                <span>All Quests</span>
+                <span class="tab-count" id="count-all">12</span>
+              </button>
+              <button class="tab-btn" data-action="change-tab" data-tab="saved" role="tab" aria-selected="false">
+                <span>★ Bookmarks</span>
+                <span class="tab-count" id="count-saved">0</span>
+              </button>
+              <button class="tab-btn" data-action="change-tab" data-tab="registered" role="tab" aria-selected="false">
+                <span>🎟️ Registered</span>
+                <span class="tab-count" id="count-registered">0</span>
+              </button>
+              <button class="tab-btn" data-action="change-tab" data-tab="completed" role="tab" aria-selected="false">
+                <span>✓ Completed</span>
+                <span class="tab-count" id="count-completed">0</span>
+              </button>
+            </div>
+
+            <!-- Dropdown Filter Controls -->
+            <div class="filter-dropdowns">
+              
+              <!-- Category Filter -->
+              <div class="filter-control">
+                <label for="filter-category" class="filter-label">Category</label>
+                <select id="filter-category" class="filter-select" data-action="filter-change">
+                  <option value="All">All Formats</option>
+                  <option value="Hackathon">Hackathon</option>
+                  <option value="Bootcamp">Bootcamp</option>
+                  <option value="Workshop">Workshop</option>
+                  <option value="Speaker Session">Speaker Session</option>
+                </select>
+              </div>
+
+              <!-- Domain Filter -->
+              <div class="filter-control">
+                <label for="filter-domain" class="filter-label">Domain</label>
+                <select id="filter-domain" class="filter-select" data-action="filter-change">
+                  <option value="All">All Domains</option>
+                  <option value="frontend">🎨 Frontend</option>
+                  <option value="backend">🛡️ Backend</option>
+                  <option value="ai">🤖 AI & ML</option>
+                  <option value="cloud">☁️ Cloud / DevOps</option>
+                  <option value="cybersecurity">🔒 Cybersecurity</option>
+                  <option value="mobile">📱 Mobile</option>
+                </select>
+              </div>
+
+              <!-- Difficulty Filter -->
+              <div class="filter-control">
+                <label for="filter-difficulty" class="filter-label">Difficulty</label>
+                <select id="filter-difficulty" class="filter-select" data-action="filter-change">
+                  <option value="All">All Levels</option>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+
+              <!-- Sort Order -->
+              <div class="filter-control">
+                <label for="sort-by" class="filter-label">Sort By</label>
+                <select id="sort-by" class="filter-select" data-action="filter-change">
+                  <option value="date-asc">Date (Soonest)</option>
+                  <option value="date-desc">Date (Latest)</option>
+                  <option value="xp-desc">Highest XP Reward</option>
+                  <option value="xp-asc">Lowest XP Reward</option>
+                  <option value="popular">Popularity (Low Seats)</option>
+                  <option value="title-asc">Title (A-Z)</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Active Filter Pills Bar -->
+          <div class="active-filters-bar hidden" id="active-filters-bar">
+            <span class="active-filters-label">Active Filters:</span>
+            <div class="active-pills-list" id="active-pills-list"></div>
+            <button class="btn-clear-all" data-action="clear-filters">Clear All</button>
+          </div>
+
+          <!-- Events Catalog Cards Grid -->
+          <div class="events-grid" id="events-grid">
+            <!-- Dynamically populated via js/ui.js -->
+          </div>
+
+        </div>
+      </section>
+
     </main>
-    <script src="js/app.js"></script>
+
+    <!-- Tech Passport Slide-over / Modal Template Container -->
+    <div id="passport-modal-content" class="hidden">
+      <div class="passport-view">
+        
+        <!-- Header Profile Summary -->
+        <div class="passport-hero">
+          <div class="passport-avatar" id="profile-user-avatar">🚀</div>
+          <div class="passport-profile-info">
+            <h3 class="passport-name" id="profile-user-name">Alex Rivera</h3>
+            <p class="passport-role" id="profile-user-role">Full Stack Explorer</p>
+            <div class="passport-metrics">
+              <div class="metric-chip">
+                <span class="metric-label">RANK</span>
+                <span class="metric-val" id="passport-level-val">Level 1</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-label">TOTAL BOUNTY</span>
+                <span class="metric-val" id="passport-xp-val">0 XP</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-label">QUESTS WON</span>
+                <span class="metric-val" id="passport-quests-val">0 / 12</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skill Domains Matrix -->
+        <div class="passport-section">
+          <div class="section-subheading">
+            <h4>Domain Skill Progression</h4>
+            <span class="subheading-note">Max 100 PTS per discipline</span>
+          </div>
+          <div class="skills-matrix" id="skills-matrix-container">
+            <!-- Dynamic skills rendered via js/ui.js -->
+          </div>
+        </div>
+
+        <!-- Badges & Achievements Grid -->
+        <div class="passport-section">
+          <div class="section-subheading">
+            <h4>Achievements & Badges</h4>
+            <span class="subheading-note">Unlock by clearing quests</span>
+          </div>
+          <div class="badges-grid" id="badges-list-container">
+            <!-- Dynamic badges rendered via js/ui.js -->
+          </div>
+        </div>
+
+        <!-- My Registered Tickets -->
+        <div class="passport-section">
+          <div class="section-subheading">
+            <h4>My Confirmed Tickets</h4>
+          </div>
+          <div class="tickets-summary-list" id="passport-tickets-list">
+            <!-- Rendered list of active tickets -->
+          </div>
+        </div>
+
+        <!-- Reset / QA Controls -->
+        <div class="passport-footer-actions">
+          <button class="btn btn-danger-ghost btn-sm" data-action="reset-progress">
+            ⚠️ Reset All Progress
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modals & Toasts Mount Points -->
+    <div id="tq-modal-overlay" class="modal-overlay"></div>
+    <div id="tq-toast-container" class="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <p>© 2026 TechQuest Platform. Engineered with Pure Modular ES6+ JavaScript.</p>
+        <div class="footer-links">
+          <span class="status-indicator-pill"><span class="status-dot"></span> System Nominal</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Main ES6 Application Entry Point -->
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

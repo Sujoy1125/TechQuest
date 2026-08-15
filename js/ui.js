@@ -6,9 +6,10 @@
  * dynamic modal management, accessible notifications, and reactive gamification HUD updates.
  */
 
-import { isEventSaved, isRegistered, isEventCompleted } from './storage.js';
+import { isEventSaved, isRegistered, isEventCompleted, getRegistrations, getCompletedEvents } from './storage.js';
 import { getLevelProgress } from './gamification.js';
 import { BADGE_DEFINITIONS } from './data.js';
+import { getAllEvents } from './events.js';
 
 /**
  * Format date string into human-friendly representation.
@@ -303,6 +304,40 @@ export function updateUserStatsDOM(profile) {
   if (skillsContainer) {
     renderSkillsGrid(profile.skills || {}, skillsContainer);
   }
+
+  // 4. Standalone Passport Page Updates
+  const levelVal = document.querySelector('#passport-level-val');
+  if (levelVal) levelVal.textContent = `Level ${progress.currentLevel}`;
+
+  const xpVal = document.querySelector('#passport-xp-val');
+  if (xpVal) xpVal.textContent = `${xp.toLocaleString()} XP`;
+
+  const completedIds = getCompletedEvents();
+  const allEvents = getAllEvents();
+  const questsVal = document.querySelector('#passport-quests-val');
+  if (questsVal) questsVal.textContent = `${completedIds.length} / ${allEvents.length}`;
+
+  const ticketsContainer = document.querySelector('#passport-tickets-list');
+  if (ticketsContainer) {
+    const registrations = getRegistrations();
+    let ticketsHtml = '';
+    if (registrations.length === 0) {
+      ticketsHtml = `<p class="empty-hint">No active registrations. Explore quests and register to claim tickets!</p>`;
+    } else {
+      ticketsHtml = registrations.map(reg => `
+        <div class="ticket-row-item">
+          <div>
+            <strong>${reg.eventTitle}</strong>
+            <div class="text-dim" style="font-size:0.75rem;">${formatDate(reg.eventDate)} • ${reg.ticketId}</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" data-action="view-ticket" data-event-id="${reg.eventId}">
+            View Ticket
+          </button>
+        </div>
+      `).join('');
+    }
+    ticketsContainer.innerHTML = ticketsHtml;
+  }
 }
 
 /**
@@ -372,6 +407,8 @@ export function renderSkillsGrid(skills = {}, container) {
 // ==========================================
 
 let activeModalEscapeHandler = null;
+let activeModalFocusHandler = null;
+let lastFocusedElement = null;
 
 /**
  * Open a generic modal dialog.
@@ -389,6 +426,9 @@ export function openModal(title, bodyHtml, footerHtml = '') {
     document.body.appendChild(modalOverlay);
   }
 
+  // Save last focused element to restore focus when modal closes
+  lastFocusedElement = document.activeElement;
+
   modalOverlay.innerHTML = `
     <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
       <header class="modal-header">
@@ -404,6 +444,10 @@ export function openModal(title, bodyHtml, footerHtml = '') {
 
   modalOverlay.classList.add('modal-visible');
   document.body.classList.add('modal-open');
+
+  // Hide main app content from screen readers while modal is open
+  const appRoot = document.querySelector('#app');
+  if (appRoot) appRoot.setAttribute('aria-hidden', 'true');
 
   // Backdrop click listener
   modalOverlay.onclick = (e) => {
@@ -422,6 +466,55 @@ export function openModal(title, bodyHtml, footerHtml = '') {
     }
   };
   document.addEventListener('keydown', activeModalEscapeHandler);
+
+  // Focus trap: keep Tab/Shift-Tab within the modal
+  const modalDialog = modalOverlay.querySelector('.modal-dialog');
+  if (modalDialog) {
+    // Find all focusable elements inside modal
+    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [contenteditable], [tabindex]:not([tabindex="-1"])';
+    const focusable = Array.from(modalDialog.querySelectorAll(focusableSelectors)).filter(el => el.offsetParent !== null);
+
+    // Focus the first focusable element, or the dialog itself as fallback
+    if (focusable.length > 0) {
+      focusable[0].focus();
+    } else {
+      modalDialog.setAttribute('tabindex', '-1');
+      modalDialog.focus();
+    }
+
+    // Remove previous handler if any
+    if (activeModalFocusHandler) {
+      document.removeEventListener('keydown', activeModalFocusHandler);
+      activeModalFocusHandler = null;
+    }
+
+    activeModalFocusHandler = (e) => {
+      if (e.key !== 'Tab') return;
+      const focusableNow = Array.from(modalDialog.querySelectorAll(focusableSelectors)).filter(el => el.offsetParent !== null);
+      if (focusableNow.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusableNow[0];
+      const last = focusableNow[focusableNow.length - 1];
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === first || document.activeElement === modalDialog) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', activeModalFocusHandler);
+  }
 }
 
 /**
@@ -431,13 +524,38 @@ export function closeModal() {
   const modalOverlay = document.querySelector('#tq-modal-overlay');
   if (modalOverlay) {
     modalOverlay.classList.remove('modal-visible');
+    // Clear modal content to remove interactive elements from DOM
+    // (keeps overlay element for template reuse)
+    setTimeout(() => {
+      if (modalOverlay) modalOverlay.innerHTML = '';
+    }, 220);
   }
   document.body.classList.remove('modal-open');
 
+  // Restore application root to screen readers
+  const appRoot = document.querySelector('#app');
+  if (appRoot) appRoot.removeAttribute('aria-hidden');
+
+  // Remove handlers
   if (activeModalEscapeHandler) {
     document.removeEventListener('keydown', activeModalEscapeHandler);
     activeModalEscapeHandler = null;
   }
+
+  if (activeModalFocusHandler) {
+    document.removeEventListener('keydown', activeModalFocusHandler);
+    activeModalFocusHandler = null;
+  }
+
+  // Restore focus to previous element if still in document
+  try {
+    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+      lastFocusedElement.focus();
+    }
+  } catch (err) {
+    // ignore
+  }
+  lastFocusedElement = null;
 }
 
 /**

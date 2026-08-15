@@ -1,31 +1,235 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechQuest - My Passport</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <link rel="stylesheet" href="css/animations.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechQuest - Gamified Developer Identity, Skill Progression, and Badges Passport">
+  <title>TechQuest | Tech Passport</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <span class="logo-tech">Tech</span><span class="logo-quest">Quest</span>
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="explore.html">Explore</a>
-                <a href="passport.html" class="active">Passport</a>
-                <a href="my-events.html">My Events</a>
-            </div>
+  <div id="app" class="app-root">
+    
+    <!-- Navigation Header -->
+    <header class="navbar" id="main-navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-brand">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-name">TechQuest</span>
+          <span class="brand-version">v2.0</span>
+        </a>
+
+        <!-- Central Navigation Links -->
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link-item">Home</a>
+          <a href="explore.html" class="nav-link-item">Explore</a>
+          <a href="passport.html" class="nav-link-item active">Passport</a>
+          <a href="my-events.html" class="nav-link-item">My Events</a>
         </nav>
+
+        <!-- Global Gamification HUD in Navbar -->
+        <div class="nav-gamification-hud" id="nav-hud">
+          <div class="hud-level-badge" id="user-level-pill" title="Your Developer Level">
+            Level 1
+          </div>
+        <!-- Numeric level (used by JS). Visually hidden but available to assistive tech and scripts -->
+        <span id="user-level-number" class="visually-hidden">1</span>
+
+        <div class="hud-xp-track" title="XP Progress towards next level">
+          <div class="hud-xp-info">
+            <span class="hud-xp-text" id="user-xp-total">0 XP</span>
+            <span class="hud-xp-sub" id="xp-progress-text">0 / 500 XP</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="xp-progress-bar-fill" style="width: 0%;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+          <!-- Tech Passport Trigger Button -->
+          <button class="btn btn-passport" id="btn-passport" data-action="open-passport" aria-label="Open Tech Passport and Profile">
+            <span class="passport-icon">🛡️</span>
+            <span class="passport-label">Tech Passport</span>
+            <span class="passport-badge-count" id="nav-badge-count">0</span>
+          </button>
+
+          <!-- Theme Toggle Button -->
+          <button class="btn-icon-only btn-theme-toggle" id="btn-theme-toggle" data-action="toggle-theme" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+            <span class="theme-icon-light">☀️</span>
+            <span class="theme-icon-dark">🌙</span>
+          </button>
+        </div>
+      </div>
     </header>
-    <main class="animate-fade-in">
-        <h1>TechQuest Passport</h1>
-        <p>Track your achievements, badges, and event participation history here.</p>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+      
+      <!-- Tech Passport Standalone Profile View -->
+      <section class="section-passport-page" aria-label="Developer Passport">
+        <div class="section-container">
+          <div class="passport-view standalone-passport-view">
+            
+            <!-- Header Profile Summary -->
+            <div class="passport-hero">
+              <div class="passport-avatar" id="profile-user-avatar">🚀</div>
+              <div class="passport-profile-info">
+                <h2 class="passport-name" id="profile-user-name">Alex Rivera</h2>
+                <p class="passport-role" id="profile-user-role">Full Stack Explorer</p>
+                <div class="passport-metrics">
+                  <div class="metric-chip">
+                    <span class="metric-label">RANK</span>
+                    <span class="metric-val" id="passport-level-val">Level 1</span>
+                  </div>
+                  <div class="metric-chip">
+                    <span class="metric-label">TOTAL BOUNTY</span>
+                    <span class="metric-val" id="passport-xp-val">0 XP</span>
+                  </div>
+                  <div class="metric-chip">
+                    <span class="metric-label">QUESTS WON</span>
+                    <span class="metric-val" id="passport-quests-val">0 / 12</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skill Domains Matrix -->
+            <div class="passport-section">
+              <div class="section-subheading">
+                <h3>Domain Skill Progression</h3>
+                <span class="subheading-note">Max 100 PTS per discipline</span>
+              </div>
+              <div class="skills-matrix" id="skills-matrix-container">
+                <!-- Dynamic skills rendered via js/ui.js -->
+              </div>
+            </div>
+
+            <!-- Badges & Achievements Grid -->
+            <div class="passport-section">
+              <div class="section-subheading">
+                <h3>Achievements & Badges</h3>
+                <span class="subheading-note">Unlock by clearing quests</span>
+              </div>
+              <div class="badges-grid" id="badges-list-container">
+                <!-- Dynamic badges rendered via js/ui.js -->
+              </div>
+            </div>
+
+            <!-- My Registered Tickets -->
+            <div class="passport-section">
+              <div class="section-subheading">
+                <h3>My Confirmed Tickets</h3>
+              </div>
+              <div class="tickets-summary-list" id="passport-tickets-list">
+                <!-- Rendered list of active tickets -->
+              </div>
+            </div>
+
+            <!-- Reset / QA Controls -->
+            <div class="passport-footer-actions">
+              <button class="btn btn-danger-ghost btn-sm" data-action="reset-progress">
+                ⚠️ Reset All Progress
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
     </main>
-    <script src="js/app.js"></script>
+
+    <!-- Tech Passport Slide-over / Modal Template Container (Needed for Navbar Trigger consistency) -->
+    <div id="passport-modal-content" class="hidden">
+      <div class="passport-view">
+        
+        <!-- Header Profile Summary -->
+        <div class="passport-hero">
+          <div class="passport-avatar" id="profile-user-avatar">🚀</div>
+          <div class="passport-profile-info">
+            <h3 class="passport-name" id="profile-user-name">Alex Rivera</h3>
+            <p class="passport-role" id="profile-user-role">Full Stack Explorer</p>
+            <div class="passport-metrics">
+              <div class="metric-chip">
+                <span class="metric-label">RANK</span>
+                <span class="metric-val" id="passport-level-val">Level 1</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-label">TOTAL BOUNTY</span>
+                <span class="metric-val" id="passport-xp-val">0 XP</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-label">QUESTS WON</span>
+                <span class="metric-val" id="passport-quests-val">0 / 12</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skill Domains Matrix -->
+        <div class="passport-section">
+          <div class="section-subheading">
+            <h4>Domain Skill Progression</h4>
+            <span class="subheading-note">Max 100 PTS per discipline</span>
+          </div>
+          <div class="skills-matrix" id="skills-matrix-container">
+            <!-- Dynamic skills rendered via js/ui.js -->
+          </div>
+        </div>
+
+        <!-- Badges & Achievements Grid -->
+        <div class="passport-section">
+          <div class="section-subheading">
+            <h4>Achievements & Badges</h4>
+            <span class="subheading-note">Unlock by clearing quests</span>
+          </div>
+          <div class="badges-grid" id="badges-list-container">
+            <!-- Dynamic badges rendered via js/ui.js -->
+          </div>
+        </div>
+
+        <!-- My Registered Tickets -->
+        <div class="passport-section">
+          <div class="section-subheading">
+            <h4>My Confirmed Tickets</h4>
+          </div>
+          <div class="tickets-summary-list" id="passport-tickets-list">
+            <!-- Rendered list of active tickets -->
+          </div>
+        </div>
+
+        <!-- Reset / QA Controls -->
+        <div class="passport-footer-actions">
+          <button class="btn btn-danger-ghost btn-sm" data-action="reset-progress">
+            ⚠️ Reset All Progress
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modals & Toasts Mount Points -->
+    <div id="tq-modal-overlay" class="modal-overlay"></div>
+    <div id="tq-toast-container" class="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <p>© 2026 TechQuest Platform. Engineered with Pure Modular ES6+ JavaScript.</p>
+        <div class="footer-links">
+          <span class="status-indicator-pill"><span class="status-dot"></span> System Nominal</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Main ES6 Application Entry Point -->
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

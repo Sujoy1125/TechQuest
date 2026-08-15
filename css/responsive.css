@@ -46,4 +46,15 @@
         padding: 0.4rem 0.8rem;
         font-size: 0.85rem;
     }
+
+    /* Hero and preview adjustments for very small screens */
+    .landing-hero-title {
+        font-size: 1.6rem;
+        line-height: 1.2;
+    }
+
+    .landing-hero-preview-card {
+        min-height: 140px;
+        padding: 0.85rem;
+    }
 }

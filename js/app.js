@@ -171,7 +171,13 @@ export function renderCatalog() {
 
   const sorted = sortEvents(filtered, state.sortBy);
   const eventsGrid = document.querySelector('#events-grid');
-  renderEventsList(sorted, eventsGrid);
+  
+  // If we are on index.html (or root), only render a slice of 3 highlights
+  const pathname = window.location.pathname;
+  const isHomePage = pathname.endsWith('index.html') || pathname === '/' || pathname.endsWith('/') || (!pathname.includes('.html'));
+  const displayEvents = isHomePage ? sorted.slice(0, 3) : sorted;
+
+  renderEventsList(displayEvents, eventsGrid);
 
   // Update active filter pills UI
   renderActiveFilterPills();
